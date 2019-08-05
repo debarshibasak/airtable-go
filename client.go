@@ -170,6 +170,20 @@ func (c *Client) UpdateRecord(tableName, recordID string, updatedFields map[stri
 	return nil
 }
 
+func (c *Client) CreateRecordRaw(tableName string, record interface{}) (interface{}, error) {
+	endpoint := fmt.Sprintf("%s/%s/%s", apiBaseURL, c.baseID, tableName)
+	rawBody, err := c.request("POST", endpoint, record)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(rawBody, &record); err != nil {
+		return nil, err
+	}
+	return record, nil
+}
+
+
 // DestroyRecord deletes a record from an Airtable table by recordID
 func (c *Client) DestroyRecord(tableName, recordID string) error {
 	if err := utils.CheckForValidRecordID(recordID); err != nil {
